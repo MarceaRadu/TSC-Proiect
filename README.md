@@ -2,64 +2,7 @@
 
 InkTime este un prototip de ceas inteligent construit în jurul platformei SoC nRF52840. Dispozitivul dispune de un display color TFT, conectivitate Bluetooth Low Energy (BLE 5.0), senzor pentru detecția mișcării și utilizează un sistem de alimentare liniar, conceput special pentru a fi eficient în utilizarea cotidiană.
 
-%% MCU Connections (bidirectional/unidirectional)
-subgraph MCU_Legaturi
-    direction LR
-    MCU_TFT[<-- SPI SCK, MOSI, CS, DC]
-    MCU_IMU[<-> I2C SCL, SDA]
-    MCU_Shaker[<-> PWM, EN]
-    MCU_Buttons[--> GPIO BTN1, BTN2, BTN3]
-    MCU_USB[<-- VBUS USB 5V (detect connection)]
-    MCU_Fuel[<-> I2C]
-end
 
-%% Peripherals
-subgraph Periferice
-    Display["Afisaj TFT 1.3\" 27x27mm (ST7789)"]
-    IMU["Senzor IMU LSM6DS3TR-C (I2C 0x6A)"]
-    Shaker["Motor Vibratii (Shaker)"] --[PWM, EN]--> Haptic["BST-BMV080 Modul Haptic"]
-    Buttons["3x Butoane Tactile (GND)"]
-    USB["Mufă USB-C (KH-TYPE-C-16P)"]
-    Fuel_Gauge["MAX17048G+T10 Fuel Gauge"]
-    EPD["E-Paper Display 1.54 inch"]
-    FET["PFET (TFT putere) (Si2301CDS)"]
-end
-
-%% Power System
-subgraph Putere
-    direction TB
-    Baterie["Baterie Li-Po 250mAh"]
-    Incarcator["BQ24040 Încărcător"]
-    LDO["Regulator LDO 3.3V (AP2112K)"]
-    ESD["USB ESD Protectie (USBLC6-2SC6Y)"]
-end
-
-%% Connect MCU connections to subgraphs
-MCU --- MCU_Legaturi
-MCU_TFT --- Display
-MCU_IMU --- IMU
-MCU_Shaker --- Shaker
-MCU_Buttons --- Buttons
-MCU_USB --- USB
-MCU --- Charger
-MCU_Fuel --- Fuel_Gauge
-MCU --- FET
-MCU <---> EPD
-
-%% Connect power flows
-USB ---[USB 5V]---> Incarcator
-ESD --- USB
-Incarcator <--->[VBAT] Baterie
-Baterie <--->[I2C] Fuel_Gauge
-Baterie ---[VBAT]---> LDO
-FET --- Display
-
-%% Power distribution from LDO (safe description, no colors)
-LDO --[3.3V]--> MCU
-LDO --[3.3V]--> Display
-LDO --[3.3V]--> Shaker
-LDO --[3.3V]--> IMU
-LDO --[3.3V]--> Fuel_Gauge
 
 ## 2. Tabel Componente (Bill Of Materials)
 
